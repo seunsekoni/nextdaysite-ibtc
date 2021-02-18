@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: seun
+        uid: 501
+      context: ./
+      dockerfile: Dockerfile.dev
+    image: stanbicibtc
+    restart: unless-stopped
+    working_dir: /var/www/html/
+    volumes:
+      - ./:/var/www/html/
+    networks:
+      - stanbicibtc
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www/html
+      - ./nginx:/etc/nginx/conf.d/
+    networks:
+      - stanbicibtc
+    
+  db:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      # ports: 3307:3306
+      
+    networks:
+      - stanbicibtc
+
+networks:
+  stanbicibtc:
+    driver: bridge
