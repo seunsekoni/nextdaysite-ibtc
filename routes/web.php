@@ -15,7 +15,15 @@ use App\Http\Controllers\StudentAccountController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('auth.login');
+})->middleware('guest');
 
-Route::resource('student/user', StudentAccountController::class);  
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+require __DIR__.'/auth.php';
+
+Route::middleware(['auth'])->group(function() {
+    Route::resource('student/user', StudentAccountController::class);
+});

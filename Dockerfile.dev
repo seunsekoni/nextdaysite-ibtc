@@ -30,6 +30,17 @@ RUN useradd -G www-data,root -u $uid -d /home/$user $user
 RUN mkdir -p /home/$user/.composer && \
     chown -R $user:$user /home/$user
 
+# install npm
+RUN curl -sL https://deb.nodesource.com/setup_12.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt-get install nodejs -y
+RUN rm nodesource_setup.sh
+
+# install xdebug
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
+ENV XDEBUG_MODE=coverage
+
 # Set working directory
 WORKDIR /var/www/html
 

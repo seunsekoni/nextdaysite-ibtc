@@ -26,22 +26,26 @@
                         <td>{{ $user->lastName }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone }}</td>
-                        <td>{{ $user->isCordinator }}</td>
-                        <td>
-                            <div class="btn-group-justified text-center" role="group">
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('user.show', [$user]) }}" style="margin-right: 10px;" class="btn btn-sm btn-primary">{{ __('View') }}</a>
-                                </div>  
-                                <div class="btn-group" role="group">
-                                    <form action="{{ route('user.destroy', [$user] ) }}" method="post" onsubmit="return confirm('Do you really want to delete this user?');" >
-                                        @csrf
-                                        @method('delete')
-                                        <button type="submit" style="margin-right: 10px;" class="btn btn-sm btn-danger">{{ __('Delete') }}</a>
-                                    </form> 
-                                </div>  
-                            </div>
-                            
-                        </td>
+                        <td>{{ $user->isCordinator == 1 ? 'Cordinator': 'Student' }}</td>
+                        @if(auth()->user()->isCordinator || auth()->user()->id == $user->id)
+                            <td>
+                                <div class="btn-group-justified text-center" role="group">
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('user.show', [$user]) }}" style="margin-right: 10px;" class="btn btn-sm btn-primary">{{ __('View') }}</a>
+                                    </div>  
+                                    @if(auth()->user()->isCordinator)
+                                        <div class="btn-group" role="group">
+                                            <form action="{{ route('user.destroy', [$user] ) }}" method="post" onsubmit="return confirm('Do you really want to delete this user?');" >
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" style="margin-right: 10px;" class="btn btn-sm btn-danger">{{ __('Delete') }}</a>
+                                            </form> 
+                                        </div>  
+                                    @endif
+                                </div>
+                                
+                            </td>
+                        @endif
                     </tr>
                 @empty
                     <tr>

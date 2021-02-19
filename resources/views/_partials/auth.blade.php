@@ -19,10 +19,20 @@
                     <a class="navbar-brand" href="{{ route('user.index') }}">Home</a>
                     <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item">
-                                <a class="nav-link active" aria-current="page" href="{{ route('user.create') }}">New Student</a>
-                            </li>
-                        </ul>
+                                @if(auth()->user()->isCordinator)
+                                    <li class="nav-item">
+                                        <a class="nav-link active" aria-current="page" href="{{ route('user.create') }}">New Student</a>
+                                    </li>
+                                @endif
+
+                            </ul>
+                        @auth
+                        <form action="{{ route('logout') }}" class="form-inline" method="POST">
+                            @csrf
+                            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Logout</button>
+                        </form>
+                        @endauth
+
                     </div>
                 </div>
             </nav>

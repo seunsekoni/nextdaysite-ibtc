@@ -24,8 +24,12 @@ class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
+            'lastName' => $this->faker->lastName,
             'email' => $this->faker->unique()->safeEmail,
             'email_verified_at' => now(),
+            'phone' => '09012345678',
+            // 'isCordinator' => 1,
+            'photo' => '',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'remember_token' => Str::random(10),
         ];
@@ -41,6 +45,20 @@ class UserFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'email_verified_at' => null,
+            ];
+        });
+    }
+
+    /**
+     * Indicate that the request has been paid for.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory
+     */
+    public function isCordinator($status)
+    {
+        return $this->state(function (array $attributes) use ($status) {
+            return [
+                'isCordinator' => $status,
             ];
         });
     }

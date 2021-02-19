@@ -42,6 +42,12 @@ class StudentAccountController extends Controller
     {
         try 
         {
+            // check if user is a cordinator
+            if (request()->user()->cannot('store', User::class)) {
+                Session::flash('error', 'You cannot perform this action as a student');
+                return back();
+            }
+
             // Retrieve the validated input data...
             $validated = $request->validated();
     
@@ -59,7 +65,7 @@ class StudentAccountController extends Controller
             // if an image was uploaded
             if($request->hasfile('photo'))
             {
-                $allowedfileExtension=['jpg','png'];
+                $allowedfileExtension=['jpg','png','jpeg'];
                 $file = $request->file('photo'); 
                 $errors = [];
                 
@@ -69,7 +75,7 @@ class StudentAccountController extends Controller
                 if($check) 
                 {
                     $mediaFile = $request->photo;
-                    $mediaFileName = $this->getUniqueReference() . '_' . now()->timestamp . '.' . $extension;;
+                    $mediaFileName = mt_rand(0, 99999999999) . '_' . now()->timestamp . '.' . $extension;;
                     $user->photo = 'uploads/'.$mediaFileName;
                     Storage::putFileAs('public/uploads', $mediaFile, $mediaFileName);
                     // $user->update(); 
@@ -102,19 +108,14 @@ class StudentAccountController extends Controller
      */
     public function show(User $user)
     {
+        // check if user is a cordinator
+        if (request()->user()->cannot('view', $user)) {
+            Session::flash('error', 'You cannot view this profile as a student');
+            return back();
+        }
         return view('manage.student.show', compact('user'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -127,6 +128,8 @@ class StudentAccountController extends Controller
     {
         try 
         {
+            
+            // $user->update($request->all());
     
             $user->name = $request->get('name');
             $user->lastName = $request->get('lastName');
@@ -138,7 +141,7 @@ class StudentAccountController extends Controller
             // if an image was uploaded
             if($request->hasfile('photo'))
             {
-                $allowedfileExtension=['jpg','png'];
+                $allowedfileExtension=['jpg','png','jpeg'];
                 $file = $request->file('photo'); 
                 $errors = [];
                 
@@ -148,7 +151,7 @@ class StudentAccountController extends Controller
                 if($check) 
                 {
                     $mediaFile = $request->photo;
-                    $mediaFileName = $this->getUniqueReference() . '_' . now()->timestamp . '.' . $extension;;
+                    $mediaFileName = mt_rand(0, 99999999999) . '_' . now()->timestamp . '.' . $extension;;
                     $user->photo = 'uploads/'.$mediaFileName;
                     Storage::putFileAs('public/uploads', $mediaFile, $mediaFileName);
                     // $user->update(); 
@@ -183,6 +186,11 @@ class StudentAccountController extends Controller
     {
         try 
         {
+            // check if user is a cordinator
+            if (request()->user()->cannot('delete', $user)) {
+                Session::flash('error', 'You cannot delete a Cordinator');
+                return back();
+            }
             $user->delete();
             Session::flash('status', 'User deleted successfully' );
             return redirect()->back();
