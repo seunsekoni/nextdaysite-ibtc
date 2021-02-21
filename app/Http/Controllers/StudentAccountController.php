@@ -63,7 +63,8 @@ class StudentAccountController extends Controller
             // if an image was uploaded
             if($request->hasfile('photo'))
             {
-                $request->file('photo')->store('', 'public');
+                $file = $request->file('photo')->store('', 'public');
+                $user->photo = $file;
             }
             $user->save();
     
@@ -113,7 +114,8 @@ class StudentAccountController extends Controller
             // if an image was uploaded
             if($request->hasfile('photo'))
             {
-                $request->file('photo')->store('', 'public');
+                $file = $request->file('photo')->store('', 'public');
+                $user->photo = $file;
             }
             $user->update();
     
