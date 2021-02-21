@@ -40,8 +40,6 @@ class StudentAccountController extends Controller
      */
     public function store(NewUserRequest $request)
     {
-        try 
-        {
             // check if user is a cordinator
             if (request()->user()->cannot('store', User::class)) {
                 Session::flash('error', 'You cannot perform this action as a student');
@@ -65,25 +63,7 @@ class StudentAccountController extends Controller
             // if an image was uploaded
             if($request->hasfile('photo'))
             {
-                $allowedfileExtension=['jpg','png','jpeg'];
-                $file = $request->file('photo'); 
-                $errors = [];
-                
-                $extension = $file->getClientOriginalExtension();
-                $check = in_array($extension,$allowedfileExtension);
-                
-                if($check) 
-                {
-                    $mediaFile = $request->photo;
-                    $mediaFileName = mt_rand(0, 99999999999) . '_' . now()->timestamp . '.' . $extension;;
-                    $user->photo = 'uploads/'.$mediaFileName;
-                    Storage::putFileAs('public/uploads', $mediaFile, $mediaFileName);
-                    // $user->update(); 
-                }
-                // Store File
-                // if ($media) 
-                // {
-                // }
+                $request->file('photo')->store('', 'public');
             }
             $user->save();
     
@@ -91,13 +71,7 @@ class StudentAccountController extends Controller
     
             return redirect()->route('user.index');
             
-        } 
-        catch (\Throwable $th) 
-        {
-            Session::flash('error', 'Error saving user');
-           \Log::error($th);
-           return redirect()->back()->withInput();
-        }
+        
     }
 
     /**
@@ -126,9 +100,7 @@ class StudentAccountController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        try 
-        {
-            
+         
             // $user->update($request->all());
     
             $user->name = $request->get('name');
@@ -141,25 +113,7 @@ class StudentAccountController extends Controller
             // if an image was uploaded
             if($request->hasfile('photo'))
             {
-                $allowedfileExtension=['jpg','png','jpeg'];
-                $file = $request->file('photo'); 
-                $errors = [];
-                
-                $extension = $file->getClientOriginalExtension();
-                $check = in_array($extension,$allowedfileExtension);
-                
-                if($check) 
-                {
-                    $mediaFile = $request->photo;
-                    $mediaFileName = mt_rand(0, 99999999999) . '_' . now()->timestamp . '.' . $extension;;
-                    $user->photo = 'uploads/'.$mediaFileName;
-                    Storage::putFileAs('public/uploads', $mediaFile, $mediaFileName);
-                    // $user->update(); 
-                }
-                // Store File
-                // if ($media) 
-                // {
-                // }
+                $request->file('photo')->store('', 'public');
             }
             $user->update();
     
@@ -167,13 +121,7 @@ class StudentAccountController extends Controller
     
             return redirect()->route('user.index');
             
-        } 
-        catch (\Throwable $th) 
-        {
-            Session::flash('error', 'Error updating user');
-           \Log::error($th);
-           return redirect()->back()->withInput();
-        }
+        
     }
 
     /**
@@ -184,8 +132,7 @@ class StudentAccountController extends Controller
      */
     public function destroy(User $user)
     {
-        try 
-        {
+  
             // check if user is a cordinator
             if (request()->user()->cannot('delete', $user)) {
                 Session::flash('error', 'You cannot delete a Cordinator');
@@ -194,14 +141,6 @@ class StudentAccountController extends Controller
             $user->delete();
             Session::flash('status', 'User deleted successfully' );
             return redirect()->back();
-        } 
-        catch (\Throwable $th) 
-        {
-            \Log::error($th);
-            Session::flash('error', 'Unable to delete user' );
-            return back();
-
-            //throw $th;
-        }
+        
     }
 }

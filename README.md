@@ -14,3 +14,7 @@
 - Run ``` php artisan serve ```
 - Visit ``` http://localhost:8000 ``` on a browser
 - To run tests ``` php artisan test```
+
+- To login, use ``` cordinator@test.com ``` as email and ``` password ``` as password.
+
+**``` App\Https\Controllers\StudentAccountController ``` has a 100% test coverage.**

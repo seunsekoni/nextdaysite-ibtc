@@ -84,15 +84,18 @@ class StudentAccountTest extends TestCase
 
     public function test_if_a_profile_owner_can_update_their_profile()
     {
+        Storage::fake('public');
         $user = User::factory()->isCordinator(1)->create();
 
+        $file = UploadedFile::fake()->image('avatar.png');
+
         $user->name = "testName";
+        $user->photo = $file;
         $response = $this->actingAs($user)->put('/student/user/'.$user->id, $user->toArray());
 
 
-
-        //The task should be updated in the database.
         $this->assertDatabaseHas('users',['id'=> $user->id , 'name' => 'testName']);
+
 
         // dd($user);
         $response->assertRedirect('student/user');
@@ -164,7 +167,7 @@ class StudentAccountTest extends TestCase
 
         $student = User::factory()->isCordinator(0)->make();
 
-        $file = UploadedFile::fake()->image('/avatar.png');
+        $file = UploadedFile::fake()->image('avatar.png');
 
         $data = [
             'name' => 'testStudent',
@@ -172,18 +175,16 @@ class StudentAccountTest extends TestCase
             'email' => 'test@test.co',
             'email_verified_at' => now(),
             'phone' => '09012345678',
-            'photo' => '',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
             'remember_token' => Str::random(10),
-            'avatar' => $file
+            'photo' => $file
         ];
-
-
-        // Assert the file was stored...
-        Storage::disk('public')->put('uploads/'.$file->hashName(), $file);
-        Storage::disk('public')->assertExists('uploads/'.$file->hashName().'/'.$file->hashName());
-
         $response = $this->actingAs($user)->post('/student/user', $data);
+
+        $imageName = $file->hashName();
+
+        Storage::disk('public')->assertExists($imageName);
+
 
         $response->assertSessionHasNoErrors();
 
@@ -199,20 +200,7 @@ class StudentAccountTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /**
-     * @expectedException
-     */
-    // public function test_exception_while_creating_a_new_user()
-    // {
-    //     $user = User::factory()->isCordinator(0)->create();
-
-    //     $student = User::factory()->isCordinator(0)->make();
-
-    //     $response = $this->actingAs($user)->post('/student/user', $student);
-
-    //     $this->expectException(\Throwable::class);
-        
-    // }
+    
 
     public function test_if_a_cordinator_can_delete_a_student()
     {
@@ -235,8 +223,18 @@ class StudentAccountTest extends TestCase
 
         $response = $this->actingAs($user)->delete('/student/user/'.$student->id);
 
-        $response->assertSessionHasNoErrors();
-
         $this->assertDatabaseMissing('users' , ['email' => $student->email]);
+    }
+
+    public function test_if_a_student_can_delete_a_cordinator_profile()
+    {
+        $cordinator = User::factory()->isCordinator(1)->create();
+
+        $student = User::factory()->isCordinator(0)->create();
+
+        $response = $this->actingAs($student)->delete('/student/user/'.$cordinator->id);
+
+        $this->assertDatabaseHas('users' , ['email' => $cordinator->email]);
+
     }
 }
