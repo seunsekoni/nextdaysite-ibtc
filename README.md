@@ -11,6 +11,7 @@
 - Run ``` php artisan serve ```
 - Run ``` php artisan migrate ```
 - Run ``` php artisan db:seed ```
+- Run ``` npm run dev ```. Be sure to have Node installed on your machine.
 - Run ``` php artisan serve ```
 - Visit ``` http://localhost:8000 ``` on a browser
 - To run tests ``` php artisan test```
